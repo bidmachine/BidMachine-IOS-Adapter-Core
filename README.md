@@ -1,0 +1,1 @@
+# BidMachine-IOS-Adapter-Core
