@@ -1,5 +1,3 @@
-import Foundation
-
 public enum BidMachineAdapterError: LocalizedError  {
     
     case unknown(String, Error? = nil)

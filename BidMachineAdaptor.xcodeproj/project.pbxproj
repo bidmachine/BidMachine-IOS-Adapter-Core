@@ -81,7 +81,7 @@
 		65A2AB9928857F43006B8035 = {
 			isa = PBXGroup;
 			children = (
-				65A2ABA528857F43006B8035 /* BidMachineAdapterCore */,
+				65A2ABA528857F43006B8035 /* BidMachineAdaptor */,
 				65A2ABA428857F43006B8035 /* Products */,
 				145E645DD5EC8680AA3AB4F0 /* Pods */,
 				ED3AE4FEB9D09CD5E7D0359F /* Frameworks */,
@@ -96,7 +96,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		65A2ABA528857F43006B8035 /* BidMachineAdapterCore */ = {
+		65A2ABA528857F43006B8035 /* BidMachineAdaptor */ = {
 			isa = PBXGroup;
 			children = (
 				65A2ABA628857F43006B8035 /* BidMachineAdapterCore.h */,
@@ -109,7 +109,7 @@
 				65A2ABBA288587AD006B8035 /* VAST */,
 				65A2ABAF28858150006B8035 /* MRAID */,
 			);
-			path = BidMachineAdapterCore;
+			path = BidMachineAdaptor;
 			sourceTree = "<group>";
 		};
 		65A2ABAF28858150006B8035 /* MRAID */ = {
@@ -203,7 +203,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 65A2AB9D28857F43006B8035 /* Build configuration list for PBXProject "BidMachineAdapterCore" */;
+			buildConfigurationList = 65A2AB9D28857F43006B8035 /* Build configuration list for PBXProject "BidMachineAdaptor" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -475,7 +475,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		65A2AB9D28857F43006B8035 /* Build configuration list for PBXProject "BidMachineAdapterCore" */ = {
+		65A2AB9D28857F43006B8035 /* Build configuration list for PBXProject "BidMachineAdaptor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				65A2ABA828857F43006B8035 /* Debug */,

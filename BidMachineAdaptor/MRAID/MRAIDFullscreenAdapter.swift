@@ -1,9 +1,10 @@
 import UIKit
-import StackUIKit
-import BidMachine
-import StackMRAIDKit
-import BidMachineApiCore
-import BidMachineBiddingCore
+
+@_implementationOnly import StackUIKit
+@_implementationOnly import BidMachine
+@_implementationOnly import StackMRAIDKit
+@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineBiddingCore
 
 class MRAIDFullscreenAdapter: NSObject, BiddingAdapterProtocol {
     

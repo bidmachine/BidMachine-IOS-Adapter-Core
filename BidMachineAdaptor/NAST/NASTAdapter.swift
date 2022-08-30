@@ -1,8 +1,9 @@
 import UIKit
-import Foundation
-import StackUIKit
-import StackNASTKit
-import BidMachineBiddingCore
+
+@_implementationOnly import Foundation
+@_implementationOnly import StackUIKit
+@_implementationOnly import StackNASTKit
+@_implementationOnly import BidMachineBiddingCore
 
 class NASTAdapter: BiddingAdapterProtocol {
     

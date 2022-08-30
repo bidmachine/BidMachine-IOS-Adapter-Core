@@ -1,8 +1,9 @@
 import UIKit
-import StackUIKit
-import StackVASTKit
-import BidMachineApiCore
-import BidMachineBiddingCore
+
+@_implementationOnly import StackUIKit
+@_implementationOnly import StackVASTKit
+@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineBiddingCore
 
 class VASTBannerAdapter: NSObject, BiddingAdapterProtocol {
     

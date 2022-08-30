@@ -1,4 +1,4 @@
-import Foundation
+@_implementationOnly import Foundation
 
 struct BidMachineIABAsset: Decodable {
     

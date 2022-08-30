@@ -1,22 +1,22 @@
-import Foundation
-import BidMachine
-import StackMRAIDKit
-import BidMachineApiCore
-import BidMachineBiddingCore
+@_implementationOnly import Foundation
 
+@_implementationOnly import StackVASTKit
+@_implementationOnly import BidMachine
+@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineBiddingCore
 
-class MRAIDNetwork : BiddingNetworkProtocol {
+class VASTNetwork : BiddingNetworkProtocol {
     
-    static var adapterName: String = "mraid"
+    static var adapterName: String = "vast"
     
-    static var adapterVersion: String = BidMachineAdapter.adapterVerstionPath + ".0"
+    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + ".0"
     
-    static var networkVersion: String = StackMRAIDKitVersion
+    static var networkVersion: String = StackVASTKitVersion
     
     weak var delegate: BiddingNetworkDelegate?
     
     func adapterProvider(_ biddingUnit: BiddingUnit) -> BiddingAdapterProviderProtocolType? {
-        return MRAIDProvider(biddingUnit)
+        return VASTProvider(biddingUnit)
     }
     
     func initializeNetwork(_ biddingNetwork: BiddingNetwork) {
@@ -28,7 +28,7 @@ class MRAIDNetwork : BiddingNetworkProtocol {
     }
 }
 
-class MRAIDProvider: BiddingAdapterProviderProtocolType {
+class VASTProvider: BiddingAdapterProviderProtocolType {
     
     private let _unit: BiddingUnit
     
@@ -48,9 +48,9 @@ class MRAIDProvider: BiddingAdapterProviderProtocolType {
 }
 
 fileprivate extension Placement {
-    
+
     func adapter(_ params: BiddingParams) throws -> BiddingAdapterProtocol {
-        guard self.type.isStatic == true else {
+        guard self.type.isVideo == true else {
             throw BidMachineAdapterError.badContent("Can't create adapter with placement - \(self.type.name)")
         }
 
@@ -68,9 +68,9 @@ fileprivate extension Placement {
     
     func _syncAdapter(_ configuration: BidMachineIABConfiguration) -> BiddingAdapterProtocol? {
         switch self.type {
-        case .banner: return MRAIDBannerAdapter(self, configuration)
-        case .rewarded: return MRAIDFullscreenAdapter(self, configuration)
-        case .interstitial: return MRAIDFullscreenAdapter(self, configuration)
+        case .media: return VASTBannerAdapter(self, configuration)
+        case .rewarded: return VASTFullscreenAdapter(self, configuration)
+        case .interstitial: return VASTFullscreenAdapter(self, configuration)
         default: return nil
         }
     }

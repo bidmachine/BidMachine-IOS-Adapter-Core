@@ -1,7 +1,8 @@
-import Foundation
-import StackNASTKit
-import StackRichMedia
-import StackVASTAssets
+@_implementationOnly import Foundation
+
+@_implementationOnly import StackNASTKit
+@_implementationOnly import StackRichMedia
+@_implementationOnly import StackVASTAssets
 
 fileprivate class NASTRichMediaAsset: STKVASTAsset, STKRichMediaAsset {
     

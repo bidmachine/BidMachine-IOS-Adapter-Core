@@ -1,10 +1,11 @@
 import UIKit
-import Foundation
-import StackUIKit
-import StackNASTKit
-import StackFoundation
-import BidMachineBiddingCore
-import StackProductPresentation
+@_implementationOnly import Foundation
+
+@_implementationOnly import StackUIKit
+@_implementationOnly import StackNASTKit
+@_implementationOnly import StackFoundation
+@_implementationOnly import BidMachineBiddingCore
+@_implementationOnly import StackProductPresentation
 
 class NASTActionController {
     

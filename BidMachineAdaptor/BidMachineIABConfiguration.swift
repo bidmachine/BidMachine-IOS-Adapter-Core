@@ -1,14 +1,17 @@
-import Foundation
-import BidMachine
-import StackVASTKit
-import StackMRAIDKit
-import BidMachineApiCore
+@_implementationOnly import Foundation
+
+@_implementationOnly import BidMachine
+@_implementationOnly import StackVASTKit
+@_implementationOnly import StackMRAIDKit
+@_implementationOnly import BidMachineApiCore
 
 struct BidMachineIABConfiguration: Decodable {
     
     private enum Keys: String, CodingKey {
         
         case adm
+        
+        case kBDMCreativeAdm
         
         case kBDMAssetInfo
         
@@ -28,7 +31,12 @@ struct BidMachineIABConfiguration: Decodable {
         let container = try decoder.container(keyedBy: Keys.self)
         let storeContainter = try container.nestedContainer(keyedBy: Keys.self, forKey: .kBDMStoreInfo)
         
-        self.adm = try container.decode(String.self, forKey: .adm)
+        if let adm = try? container.decode(String.self, forKey: .kBDMCreativeAdm) {
+            self.adm = adm
+        } else {
+            self.adm = try container.decode(String.self, forKey: .adm)
+        }
+        
         self.iab = try? container.decodeIfPresent(BidMachineIABModel.self, forKey: .kBDMAssetInfo)
         self.store = try? storeContainter.decodeIfPresent(BidMachineStoreModel.self, forKey: .skadn)
     }

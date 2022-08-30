@@ -1,14 +1,15 @@
-import Foundation
-import BidMachine
-import StackNASTKit
-import BidMachineApiCore
-import BidMachineBiddingCore
+@_implementationOnly import Foundation
+
+@_implementationOnly import BidMachine
+@_implementationOnly import StackNASTKit
+@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineBiddingCore
 
 class NASTNetwork : BiddingNetworkProtocol {
     
     static var adapterName: String = "nast"
     
-    static var adapterVersion: String = BidMachineAdapter.adapterVerstionPath + ".0"
+    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + ".0"
     
     static var networkVersion: String = StackNASTKitVersion
     

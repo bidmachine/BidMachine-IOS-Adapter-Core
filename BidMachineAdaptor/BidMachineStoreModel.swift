@@ -1,5 +1,6 @@
-import Foundation
-import StackProductPresentation
+@_implementationOnly import Foundation
+
+@_implementationOnly import StackProductPresentation
 
 struct BidMachineStoreModel: Decodable {
     

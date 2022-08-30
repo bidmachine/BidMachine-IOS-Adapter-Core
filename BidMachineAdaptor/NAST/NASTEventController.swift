@@ -1,7 +1,8 @@
-import Foundation
-import StackNASTKit
-import StackFoundation
-import BidMachineBiddingCore
+@_implementationOnly import Foundation
+
+@_implementationOnly import StackNASTKit
+@_implementationOnly import StackFoundation
+@_implementationOnly import BidMachineBiddingCore
 
 class NASTEventController {
     
