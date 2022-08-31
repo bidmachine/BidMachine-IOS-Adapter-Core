@@ -24,7 +24,7 @@ class NASTActionController {
     init(_ ad: STKNASTAd, _ configuration: BidMachineIABConfiguration) {
         _configuration = configuration
         _productPresenter = ProductController()
-        _info = configuration.store?.iabJson ?? [:]
+        _info = configuration.storeParams
         _productPresenter.delegate = self
    
         _info[ProductController.clickThroughKey] = ad.clickThrough

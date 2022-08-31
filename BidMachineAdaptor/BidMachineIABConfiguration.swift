@@ -19,6 +19,10 @@ struct BidMachineIABConfiguration: Decodable {
         
         case skadn
         
+        case kBDMAdMarkupTimeout
+        
+        case kBDMEmbeddedBrowser
+        
     }
     
     let adm: String
@@ -26,6 +30,10 @@ struct BidMachineIABConfiguration: Decodable {
     let iab: BidMachineIABModel?
     
     let store: BidMachineStoreModel?
+    
+    let adMarkupLoadingTimeout: Double?
+    
+    let useEmbeddedBrowser: Bool?
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Keys.self)
@@ -39,6 +47,8 @@ struct BidMachineIABConfiguration: Decodable {
         
         self.iab = try? container.decodeIfPresent(BidMachineIABModel.self, forKey: .kBDMAssetInfo)
         self.store = try? storeContainter.decodeIfPresent(BidMachineStoreModel.self, forKey: .skadn)
+        self.adMarkupLoadingTimeout = try? container.decodeIfPresent(Double.self, forKey: .kBDMAdMarkupTimeout)
+        self.useEmbeddedBrowser = try? container.decodeIfPresent(Bool.self, forKey: .kBDMEmbeddedBrowser)
     }
 }
 
@@ -70,9 +80,7 @@ extension BidMachineIABConfiguration {
             config.progressAsset = progressAsset.configuration
         }
         
-        if let storeParams = self.store.flatMap ({ $0.iabJson }) {
-            config.productParameters = storeParams
-        }
+        config.productParameters = self.storeParams
         
         return config
     }
@@ -87,8 +95,14 @@ extension BidMachineIABConfiguration {
             .appendPartnerName(BidMachineSdk.partnerName)
             .appendPartnerVersion(BidMachineSdk.partnerVersion)
             .appendMeasuring(true)
-            .appendProductParameters(self.store.flatMap ({ $0.iabJson }) ?? [:])
+            .appendProductParameters(self.storeParams)
         }
+    }
+    
+    var storeParams: [String : Any] {
+        var storeParams = self.store.flatMap { $0.iabJson } ?? [:]
+        storeParams["unknown"] = self.useEmbeddedBrowser
+        return storeParams
     }
 }
 
