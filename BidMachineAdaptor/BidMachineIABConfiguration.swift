@@ -4,6 +4,7 @@
 @_implementationOnly import StackVASTKit
 @_implementationOnly import StackMRAIDKit
 @_implementationOnly import BidMachineApiCore
+@_implementationOnly import StackProductPresentation
 
 struct BidMachineIABConfiguration: Decodable {
     
@@ -101,7 +102,7 @@ extension BidMachineIABConfiguration {
     
     var storeParams: [String : Any] {
         var storeParams = self.store.flatMap { $0.iabJson } ?? [:]
-        storeParams["unknown"] = self.useEmbeddedBrowser
+        storeParams[ProductController.useEmbeddedBrowser] = self.useEmbeddedBrowser.flatMap { $0 ? 1 : 0 }
         return storeParams
     }
 }
