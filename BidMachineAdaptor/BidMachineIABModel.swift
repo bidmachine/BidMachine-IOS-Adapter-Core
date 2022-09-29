@@ -47,12 +47,6 @@ struct BidMachineIABModel: Decodable {
     let r2: Bool?
     
     let progressDuration: Double?
-    
-    let skipoffset: Double?
-    
-    let storeURL: String?
-    
-    let useNativeClose: Bool?
 
     let ignoresSafeAreaLayoutGuide: Bool?
 

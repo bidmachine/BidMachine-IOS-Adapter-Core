@@ -31,6 +31,8 @@ struct BidMachineStoreModel: Decodable {
     
     let signature: String
     
+    let useEmbeddedBrowser: Bool?
+    
     let fidelities: [FidelitiesModel]?
 }
 
@@ -46,6 +48,7 @@ extension BidMachineStoreModel {
         json[ProductController.adNetworkSourceAppStoreIdentifierKey] = self.sourceapp
         json[ProductController.adNetworkTimestampKey] = self.timestamp
         json[ProductController.adNetworkAttributionSignatureKey] = self.signature
+        json[ProductController.useEmbeddedBrowser] = self.useEmbeddedBrowser.flatMap { $0 ? 1 : 0 }
         json[ProductController.adNetworkFidelitiesKey] = self.fidelities.flatMap{ $0.compactMap{ $0.iabJson } }
         return json
     }

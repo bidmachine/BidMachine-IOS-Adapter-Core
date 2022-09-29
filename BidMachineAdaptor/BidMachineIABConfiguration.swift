@@ -14,31 +14,24 @@ struct BidMachineIABConfiguration: Decodable {
         
         case kBDMCreativeAdm
         
-        case kBDMAssetInfo
+        case assetInfo
         
-        case kBDMStoreInfo
+        case storeInfo
         
-        case skadn
-        
-        case kBDMAdMarkupTimeout
-        
-        case kBDMEmbeddedBrowser
+        case featureInfo
         
     }
     
     let adm: String
     
-    let iab: BidMachineIABModel?
+    let assetInfo: BidMachineIABModel?
     
-    let store: BidMachineStoreModel?
+    let storeInfo: BidMachineStoreModel?
     
-    let adMarkupLoadingTimeout: Double?
-    
-    let useEmbeddedBrowser: Bool?
+    let featureInfo: BidMachineFeaturesModel?
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Keys.self)
-        let storeContainter = try container.nestedContainer(keyedBy: Keys.self, forKey: .kBDMStoreInfo)
         
         if let adm = try? container.decode(String.self, forKey: .kBDMCreativeAdm) {
             self.adm = adm
@@ -46,10 +39,9 @@ struct BidMachineIABConfiguration: Decodable {
             self.adm = try container.decode(String.self, forKey: .adm)
         }
         
-        self.iab = try? container.decodeIfPresent(BidMachineIABModel.self, forKey: .kBDMAssetInfo)
-        self.store = try? storeContainter.decodeIfPresent(BidMachineStoreModel.self, forKey: .skadn)
-        self.adMarkupLoadingTimeout = try? container.decodeIfPresent(Double.self, forKey: .kBDMAdMarkupTimeout)
-        self.useEmbeddedBrowser = try? container.decodeIfPresent(Bool.self, forKey: .kBDMEmbeddedBrowser)
+        self.assetInfo = try? container.decodeIfPresent(BidMachineIABModel.self, forKey: .assetInfo)
+        self.storeInfo = try? container.decodeIfPresent(BidMachineStoreModel.self, forKey: .storeInfo)
+        self.featureInfo = try? container.decodeIfPresent(BidMachineFeaturesModel.self, forKey: .featureInfo)
     }
 }
 
@@ -57,17 +49,23 @@ extension BidMachineIABConfiguration {
     
     var mraidConfiguration: STKMRAIDPresentationConfiguration {
         let config = STKMRAIDPresentationConfiguration()
-        guard let iab = self.iab else {
+        
+        if let features = self.featureInfo {
+            config.closeTime = features.skipoffset ?? 0
+            config.useNativeClose = features.useNativeClose ?? true
+            config.productLink = features.storeURL
+        }
+        
+        guard let iab = self.assetInfo else {
             return config
         }
-        config.closeTime = iab.skipoffset ?? 0
-        config.duration = iab.progressDuration ?? 0
-        config.useNativeClose = iab.useNativeClose ?? true
+        
         config.r1 = iab.r1 ?? false
         config.r2 = iab.r2 ?? false
         config.r1Delay = iab.r1Delay ?? 0
+        config.duration = iab.progressDuration ?? 0
         config.ignoresSafeAreaLayout = iab.ignoresSafeAreaLayoutGuide ?? false
-        config.productLink = iab.storeURL
+        
         
         if let countdown = iab.countdown {
             config.countdownAsset = countdown.configuration
@@ -91,8 +89,8 @@ extension BidMachineIABConfiguration {
             .appendAutoclose(false)
             .appendMaxDuration(180)
             .appendRewarded(placement.isRewarded)
-            .appendVideoCloseTime(self.iab?.skipoffset ?? 0)
-            .appendForceCloseTime(self.iab?.useNativeClose ?? false)
+            .appendVideoCloseTime(self.featureInfo?.skipoffset ?? 0)
+            .appendForceCloseTime(self.featureInfo?.useNativeClose ?? false)
             .appendPartnerName(BidMachineSdk.partnerName)
             .appendPartnerVersion(BidMachineSdk.partnerVersion)
             .appendMeasuring(true)
@@ -100,11 +98,7 @@ extension BidMachineIABConfiguration {
         }
     }
     
-    var storeParams: [String : Any] {
-        var storeParams = self.store.flatMap { $0.iabJson } ?? [:]
-        storeParams[ProductController.useEmbeddedBrowser] = self.useEmbeddedBrowser.flatMap { $0 ? 1 : 0 }
-        return storeParams
-    }
+    var storeParams: [String : Any] { self.storeInfo.flatMap { $0.iabJson } ?? [:] }
 }
 
 private extension BidMachineIABAsset {

@@ -35,7 +35,7 @@ class MRAIDFullscreenAdapter: NSObject, BiddingAdapterProtocol {
         _ad.service.configuration.partnerName = BidMachineSdk.partnerName
         _ad.service.configuration.partnerVersion = BidMachineSdk.partnerVersion
         
-        _ad.configuration.appendTimeout(_configuration.adMarkupLoadingTimeout ?? 0)
+        _ad.configuration.appendTimeout(_configuration.featureInfo?.adMarkupLoadingTimeout ?? 0)
     }
 }
 

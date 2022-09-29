@@ -17,6 +17,7 @@
 		65A2ABC0288587E6006B8035 /* VASTFullscreenAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A2ABBF288587E6006B8035 /* VASTFullscreenAdapter.swift */; };
 		65A2ABC3288589EF006B8035 /* NASTNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A2ABC2288589EF006B8035 /* NASTNetwork.swift */; };
 		65A2ABC5288589FF006B8035 /* NASTAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A2ABC4288589FF006B8035 /* NASTAdapter.swift */; };
+		65A79E9628E1FFF300AA309F /* BidMachineFeaturesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A79E9528E1FFF300AA309F /* BidMachineFeaturesModel.swift */; };
 		65BA6DCB2899AA7500C0DDBE /* NASTMediaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BA6DCA2899AA7500C0DDBE /* NASTMediaController.swift */; };
 		65BA6DCD289A684F00C0DDBE /* NASTActionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BA6DCC289A684F00C0DDBE /* NASTActionController.swift */; };
 		65BA6DCF289A686800C0DDBE /* NASTEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BA6DCE289A686800C0DDBE /* NASTEventController.swift */; };
@@ -43,6 +44,7 @@
 		65A2ABBF288587E6006B8035 /* VASTFullscreenAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VASTFullscreenAdapter.swift; sourceTree = "<group>"; };
 		65A2ABC2288589EF006B8035 /* NASTNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASTNetwork.swift; sourceTree = "<group>"; };
 		65A2ABC4288589FF006B8035 /* NASTAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASTAdapter.swift; sourceTree = "<group>"; };
+		65A79E9528E1FFF300AA309F /* BidMachineFeaturesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidMachineFeaturesModel.swift; sourceTree = "<group>"; };
 		65BA6DCA2899AA7500C0DDBE /* NASTMediaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASTMediaController.swift; sourceTree = "<group>"; };
 		65BA6DCC289A684F00C0DDBE /* NASTActionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASTActionController.swift; sourceTree = "<group>"; };
 		65BA6DCE289A686800C0DDBE /* NASTEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASTEventController.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				659D741B28A45B7A00947570 /* BidMachineAdapter.swift */,
 				65BA6E3028A419C400C0DDBE /* BidMachineIABModel.swift */,
 				65BA6E3428A4341800C0DDBE /* BidMachineStoreModel.swift */,
+				65A79E9528E1FFF300AA309F /* BidMachineFeaturesModel.swift */,
 				65CF138C28A51C1B001E5314 /* BidMachineIABConfiguration.swift */,
 				65A2ABC1288589BB006B8035 /* NAST */,
 				65A2ABBA288587AD006B8035 /* VAST */,
@@ -273,6 +276,7 @@
 				65A2ABB9288584D0006B8035 /* MRAIDFullscreenAdapter.swift in Sources */,
 				65BA6DCF289A686800C0DDBE /* NASTEventController.swift in Sources */,
 				65BA6DCB2899AA7500C0DDBE /* NASTMediaController.swift in Sources */,
+				65A79E9628E1FFF300AA309F /* BidMachineFeaturesModel.swift in Sources */,
 				65BA6E3128A419C400C0DDBE /* BidMachineIABModel.swift in Sources */,
 				65BA6DCD289A684F00C0DDBE /* NASTActionController.swift in Sources */,
 				65CF138D28A51C1B001E5314 /* BidMachineIABConfiguration.swift in Sources */,

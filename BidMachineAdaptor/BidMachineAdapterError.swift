@@ -4,6 +4,7 @@ public enum BidMachineAdapterError: LocalizedError  {
     case noContent(String, Error? = nil)
     case badContent(String, Error? = nil)
     case expired(String, Error? = nil)
+    case timeouted(String, Error? = nil)
     
     public var errorDescription: String? {
         switch self {
@@ -11,11 +12,8 @@ public enum BidMachineAdapterError: LocalizedError  {
         case .noContent(let message, let error): return "Adapter has not content (or required content): \(message)".populateWithError(error)
         case .badContent(let message, let error): return "Adapter has bas content: \(message)".populateWithError(error)
         case .expired(let message, let error): return "Adapter is expired: \(message)".populateWithError(error)
+        case .timeouted(let message, let error): return "Adapter is timeouted: \(message)".populateWithError(error)
         }
-    }
-    
-    public func wrappedError(_ error: Error?) {
-        
     }
 }
 
@@ -31,6 +29,7 @@ extension BidMachineAdapterError: CustomNSError {
         case .badContent: return 101
         case .noContent: return 103
         case .expired: return 107
+        case .timeouted: return 201
         }
     }
 }
