@@ -10,7 +10,7 @@ class MRAIDNetwork : BiddingNetworkProtocol {
     
     static var adapterName: String = "mraid"
     
-    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + ".0"
+    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + BidMachineAdapter.iabVersion
     
     static var networkVersion: String = StackMRAIDKitVersion
     

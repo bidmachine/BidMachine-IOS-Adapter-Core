@@ -8,4 +8,6 @@ public struct BidMachineAdapter {
         return separator.joined(separator: ".")
         
     }
+    
+    internal static var iabVersion: String { "1" }
 }

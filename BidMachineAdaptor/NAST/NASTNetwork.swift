@@ -9,7 +9,7 @@ class NASTNetwork : BiddingNetworkProtocol {
     
     static var adapterName: String = "nast"
     
-    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + ".0"
+    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + BidMachineAdapter.iabVersion
     
     static var networkVersion: String = StackNASTKitVersion
     
