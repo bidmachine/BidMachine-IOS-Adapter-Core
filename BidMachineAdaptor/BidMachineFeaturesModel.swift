@@ -2,6 +2,16 @@
 
 struct BidMachineFeaturesModel: Decodable {
     
+    enum CreativeLoadingMethod: String, Decodable {
+        
+        case full = "FullLoad"
+        
+        case stream = "Stream"
+        
+        case patitial = "PartialLoad"
+        
+    }
+    
     let skipoffset: Double?
     
     let storeURL: String?
@@ -10,7 +20,7 @@ struct BidMachineFeaturesModel: Decodable {
     
     let adMarkupLoadingTimeout: Double?
 
-    let creativeLoadingMethod: String?
+    let creativeLoadingMethod: CreativeLoadingMethod?
     
     let placeholderTimeout: Double?
 }

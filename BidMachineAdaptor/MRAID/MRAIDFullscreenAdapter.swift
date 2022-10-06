@@ -8,11 +8,9 @@ import UIKit
 
 class MRAIDFullscreenAdapter: NSObject, BiddingAdapterProtocol {
     
-    private let _ad: STKMRAIDAd
-    
     private let _placement: Placement
     
-    private let _presenter: STKMRAIDInterstitialPresenter
+    private let _interstitial: STKMRAIDInterstitial
     
     private let _configuration: BidMachineIABConfiguration
     
@@ -22,81 +20,78 @@ class MRAIDFullscreenAdapter: NSObject, BiddingAdapterProtocol {
     weak var dataSource: BiddingAdapterDataSource?
     
     init(_ placement: Placement, _ configuration: BidMachineIABConfiguration) {
-        _ad = STKMRAIDAd()
+        _interstitial = STKMRAIDInterstitial()
         _placement = placement
         _configuration = configuration
-        _presenter = STKMRAIDInterstitialPresenter(configuration: configuration.mraidConfiguration)
         
         super.init()
-
-        _ad.delegate = self
-        _presenter.delegate = self
-        _ad.service.configuration.registerServices([kMRAIDSupportsInlineVideo, kMRAIDSupportsLogging, kMRAIDMeasure])
-        _ad.service.configuration.partnerName = BidMachineSdk.partnerName
-        _ad.service.configuration.partnerVersion = BidMachineSdk.partnerVersion
-        
-        _ad.configuration.appendTimeout(_configuration.featureInfo?.adMarkupLoadingTimeout ?? 0)
     }
 }
 
 extension MRAIDFullscreenAdapter {
     
     func prepareContent() throws {
-        _ad.loadHTML(_configuration.adm)
+        _interstitial.delegate = self
+        _interstitial.loadHTML(_configuration.adm, with: _configuration.mraidConfiguration)
     }
     
     func present() throws {
-        _presenter.present(_ad)
+        _interstitial.presentAd()
     }
 }
 
-extension MRAIDFullscreenAdapter: STKMRAIDAdDelegate {
+extension MRAIDFullscreenAdapter: STKMRAIDInterstitialDelegate {
     
-    func didLoad(_ ad: STKMRAIDAd) {
+    func didLoadAd(_ wrapper: STKMRAIDWrapper) {
         self.notifyDelegate { $1.didLoad($0) }
     }
     
-    func didFail(toLoad ad: STKMRAIDAd, withError error: Error) {
+    func didExpireAd(_ wrapper: STKMRAIDWrapper) {
+        self.notifyDelegate{ $1.didExpiredAdapter($0) }
+    }
+    
+    func didFail(toLoadAd wrapper: STKMRAIDWrapper, withError error: Error) {
         self.notifyDelegate{ $1.failToLoad($0, BidMachineAdapterError.badContent("Can't load MRAID", error)) }
     }
     
-    func ad(_ ad: STKMRAIDAd, shouldProcessNavigationWith URL: URL) -> Bool {
-        return true
-    }
-}
+    func didFail(toShowAd wrapper: STKMRAIDWrapper, withError error: Error) {
+        var wrappedError = BidMachineAdapterError.badContent("Can't present MRAID", error)
+        if (error as NSError).code == 201 {
+            wrappedError = BidMachineAdapterError.timeouted("Can't present MRAID", error)
+        }
 
-extension MRAIDFullscreenAdapter: STKMRAIDInterstitialPresenterDelegate {
+        self.notifyDelegate { $1.failToPresent($0, wrappedError) }
+    }
     
-    func presenterDidAppear(_ presenter: STKMRAIDPresenter) {
-        self.notifyDelegate { $1.didPresent($0) }
+    func interstitialDidImpression(_ interstitial: STKMRAIDInterstitial) {
         self.notifyDelegate { $1.trackImpression() }
     }
     
-    func presenterDidDisappear(_ presenter: STKMRAIDPresenter) {
+    func interstitialDidAppear(_ interstitial: STKMRAIDInterstitial) {
+        self.notifyDelegate { $1.didPresent($0) }
+    }
+    
+    func interstitialDidDissapear(_ interstitial: STKMRAIDInterstitial) {
         if _placement.isRewarded {
             self.notifyDelegate { $1.didRecieveReward($0) }
         }
         self.notifyDelegate { $1.didDismiss($0) }
     }
-    
-    func presenterFail(toPresent presenter: STKMRAIDPresenter, withError error: Error) {
-        self.notifyDelegate { $1.failToPresent($0, BidMachineAdapterError.badContent("Can't present MRAID", error)) }
+
+    func wrapperWillLeaveApplication(_ wrapper: STKMRAIDWrapper) {
+        self.notifyDelegate{ $1.didRecieveUserAction($0) }
     }
     
-    func presenterWillLeaveApplication(_ presenter: STKMRAIDPresenter) {
-        self.notifyDelegate { $1.didRecieveUserAction($0) }
+    func wrapperWillPresentProductScreen(_ wrapper: STKMRAIDWrapper) {
+        self.notifyDelegate{ $1.willPresentScreen($0) }
+        self.notifyDelegate{ $1.didRecieveUserAction($0) }
     }
     
-    func presenterWillPresentProductScreen(_ presenter: STKMRAIDPresenter) {
-        self.notifyDelegate { $1.willPresentScreen($0) }
-        self.notifyDelegate { $1.didRecieveUserAction($0) }
+    func wrapperDidDismissProductScreen(_ wrapper: STKMRAIDWrapper) {
+        self.notifyDelegate{ $1.didDismissScreen($0) }
     }
     
-    func presenterDidDismissProductScreen(_ presenter: STKMRAIDPresenter) {
-        self.notifyDelegate { $1.didDismissScreen($0) }
-    }
-    
-    func presenterRootViewController() -> UIViewController? {
+    func rootViewController() -> UIViewController? {
         return self.dataSource?.controller
     }
 }

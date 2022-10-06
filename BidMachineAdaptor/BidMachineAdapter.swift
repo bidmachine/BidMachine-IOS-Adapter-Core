@@ -9,5 +9,5 @@ public struct BidMachineAdapter {
         
     }
     
-    internal static var iabVersion: String { "1" }
+    internal static var iabVersion: String { "2" }
 }

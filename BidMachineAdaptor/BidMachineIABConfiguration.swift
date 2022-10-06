@@ -47,11 +47,44 @@ struct BidMachineIABConfiguration: Decodable {
 
 extension BidMachineIABConfiguration {
     
-    var mraidConfiguration: STKMRAIDPresentationConfiguration {
+    var mraidConfiguration: STKMRAIDWrapperConfiguration {
+        let config =  STKMRAIDWrapperConfiguration()
+        
+        config.cacheType = self.loadingMethod
+        config.presentationConfiguration = self.mraidPresentationConfiguration
+        config.webConfiguration = self.mraidWebConfiguration
+        config.serviceConfiguration = self.mraidServiceConfiguration
+        
+        return config
+    }
+    
+    func vastConfiguration(_ placement: Placement) -> STKVASTControllerConfiguration {
+        STKVASTControllerConfiguration { _ = $0
+            .appendAutoclose(false)
+            .appendMaxDuration(180)
+            .appendRewarded(placement.isRewarded)
+            .appendCacheType(self.loadingMethod)
+            .appendPlaceholderTimeout(self.featureInfo?.placeholderTimeout ?? 0)
+            .appendVideoCloseTime(self.featureInfo?.skipoffset ?? 0)
+            .appendForceCloseTime(self.featureInfo?.useNativeClose ?? false)
+            .appendPartnerName(BidMachineSdk.partnerName)
+            .appendPartnerVersion(BidMachineSdk.partnerVersion)
+            .appendMeasuring(true)
+            .appendProductParameters(self.storeParams)
+        }
+    }
+    
+    var storeParams: [String : Any] { self.storeInfo.flatMap { $0.iabJson } ?? [:] }
+    
+}
+
+private extension BidMachineIABConfiguration {
+    
+    var mraidPresentationConfiguration: STKMRAIDPresentationConfiguration {
         let config = STKMRAIDPresentationConfiguration()
         
         if let features = self.featureInfo {
-            config.closeTime = features.skipoffset ?? 0
+            config.closeTime = features.placeholderTimeout ?? (features.skipoffset ?? 0)
             config.useNativeClose = features.useNativeClose ?? true
             config.productLink = features.storeURL
         }
@@ -84,21 +117,33 @@ extension BidMachineIABConfiguration {
         return config
     }
     
-    func vastConfiguration(_ placement: Placement) -> STKVASTControllerConfiguration {
-        STKVASTControllerConfiguration { _ = $0
-            .appendAutoclose(false)
-            .appendMaxDuration(180)
-            .appendRewarded(placement.isRewarded)
-            .appendVideoCloseTime(self.featureInfo?.skipoffset ?? 0)
-            .appendForceCloseTime(self.featureInfo?.useNativeClose ?? false)
-            .appendPartnerName(BidMachineSdk.partnerName)
-            .appendPartnerVersion(BidMachineSdk.partnerVersion)
-            .appendMeasuring(true)
-            .appendProductParameters(self.storeParams)
-        }
+    var mraidWebConfiguration: STKMRAIDWebConfiguration {
+        let config = STKMRAIDWebConfiguration()
+        
+        config.appendTimeout(self.featureInfo?.adMarkupLoadingTimeout ?? 0)
+        return config
     }
     
-    var storeParams: [String : Any] { self.storeInfo.flatMap { $0.iabJson } ?? [:] }
+    var mraidServiceConfiguration: STKMRAIDServiceConfiguration {
+        let config = STKMRAIDServiceConfiguration()
+        
+        config.registerServices([kMRAIDSupportsInlineVideo, kMRAIDSupportsLogging, kMRAIDMeasure])
+        config.partnerName = BidMachineSdk.partnerName
+        config.partnerVersion = BidMachineSdk.partnerVersion
+        return config
+    }
+    
+    var loadingMethod: CacheType {
+        guard let method = self.featureInfo?.creativeLoadingMethod else {
+            return .fullLoad
+        }
+        
+        switch method {
+        case .full: return .fullLoad
+        case .stream: return .stream
+        case .patitial: return .partialLoad
+        }
+    }
 }
 
 private extension BidMachineIABAsset {

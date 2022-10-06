@@ -42,8 +42,13 @@ extension VASTFullscreenAdapter {
 
 extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     
+    
     func vastControllerReady(_ controller: STKVASTController) {
         self.notifyDelegate { $1.didLoad($0) } 
+    }
+    
+    func vastControllerDidExpire(_ controller: STKVASTController) {
+        self.notifyDelegate{ $1.didExpiredAdapter($0) }
     }
     
     func vastController(_ controller: STKVASTController, didFailToLoad error: Error) {
@@ -51,12 +56,17 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     }
     
     func vastController(_ controller: STKVASTController, didFailWhileShow error: Error) {
-        self.notifyDelegate { $1.failToPresent($0, BidMachineAdapterError.badContent("Can't present VAST", error)) }
+        var wrappedError = BidMachineAdapterError.badContent("Can't present VAST", error)
+        if (error as NSError).code == 201 {
+            wrappedError = BidMachineAdapterError.timeouted("Can't present VAST", error)
+        }
+
+        self.notifyDelegate { $1.failToPresent($0, wrappedError) }
     }
     
     func vastControllerDidPresent(_ controller: STKVASTController) {
         self.notifyDelegate { $1.didPresent($0) }
-        self.notifyDelegate { $1.trackImpression() }
+        
     }
     
     func vastControllerDidFinish(_ controller: STKVASTController) {
@@ -65,8 +75,8 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
         }
     }
     
-    func vastControllerDidSkip(_ controller: STKVASTController) {
-        
+    func vastControllerDidImpression(_ controller: STKVASTController) {
+        self.notifyDelegate { $1.trackImpression() }
     }
     
     func vastControllerWillLeaveApplication(_ controller: STKVASTController) {
@@ -84,9 +94,5 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     
     func vastControllerDidDismiss(_ controller: STKVASTController) {
         self.notifyDelegate { $1.didDismiss($0) }
-    }
-    
-    func vastController(_ controller: STKVASTController, shouldProcessNavigationWith URL: URL) -> Bool {
-        true
     }
 }

@@ -8,13 +8,15 @@ import UIKit
 
 class MRAIDBannerAdapter: NSObject, BiddingAdapterProtocol {
     
-    private let _ad: STKMRAIDAd
+    private let _banner: STKMRAIDBanner
     
     private let _placement: Placement
     
-    private let _presenter: STKMRAIDViewPresenter
-    
     private let _configuration: BidMachineIABConfiguration
+    
+    private var _isAdOnScreen: Bool = false
+    
+    private var _isMraidOnScreen: Bool = false
     
     
     weak var delegate: BiddingAdapterDelegate?
@@ -22,20 +24,11 @@ class MRAIDBannerAdapter: NSObject, BiddingAdapterProtocol {
     weak var dataSource: BiddingAdapterDataSource?
     
     init(_ placement: Placement, _ configuration: BidMachineIABConfiguration) {
-        _ad = STKMRAIDAd()
+        _banner = STKMRAIDBanner()
         _placement = placement
         _configuration = configuration
-        _presenter = STKMRAIDViewPresenter(configuration: configuration.mraidConfiguration)
         
         super.init()
-        
-        _ad.delegate = self
-        _presenter.delegate = self
-        _ad.service.configuration.registerServices([kMRAIDSupportsInlineVideo, kMRAIDSupportsLogging, kMRAIDMeasure])
-        _ad.service.configuration.partnerName = BidMachineSdk.partnerName
-        _ad.service.configuration.partnerVersion = BidMachineSdk.partnerVersion
-        
-        _ad.configuration.appendTimeout(_configuration.featureInfo?.adMarkupLoadingTimeout ?? 0)
     }
 }
 
@@ -53,7 +46,7 @@ extension MRAIDBannerAdapter {
     }
     
     func invalidate() {
-        _presenter.removeFromSuperview()
+        _banner.removeFromSuperview()
         self.notifyDelegate{ $1.didDismiss($0) }
     }
     
@@ -65,58 +58,71 @@ extension MRAIDBannerAdapter {
 extension MRAIDBannerAdapter: BiddingAdapterEventStateRouter {
     
     func trackImpression() {
-        self.notifyDelegate{ $1.trackImpression() }
+        _isAdOnScreen = true
+        _trackImpressionIfNeeded()
+    }
+    
+    func _trackImpressionIfNeeded() {
+        if _isAdOnScreen && _isMraidOnScreen {
+            self.notifyDelegate{ $1.trackImpression() }
+        }
     }
 }
 
 private extension MRAIDBannerAdapter {
     
     func _prepareContent() {
-        _ad.loadHTML(_configuration.adm)
+        _banner.delegate = self
+        _banner.loadHTML(_configuration.adm, with: _configuration.mraidConfiguration)
     }
     
     func _present(_ container: UIView) {
         container.subviews.forEach { $0.removeFromSuperview() }
-        container.addSubview(_presenter)
+        container.addSubview(_banner)
         
-        _presenter.stk_edgesEqual(container)
-        _presenter.present(_ad)
+        _banner.stk_edgesEqual(container)
         
         self.notifyDelegate{ $1.didPresent($0) }
     }
 }
 
-extension MRAIDBannerAdapter: STKMRAIDAdDelegate {
+extension MRAIDBannerAdapter: STKMRAIDBannerDelegate {
     
-    func didLoad(_ ad: STKMRAIDAd) {
+    func didLoadAd(_ wrapper: STKMRAIDWrapper) {
         self.notifyDelegate{ $1.didLoad($0) }
     }
     
-    func didFail(toLoad ad: STKMRAIDAd, withError error: Error) {
+    func didExpireAd(_ wrapper: STKMRAIDWrapper) {
+        self.notifyDelegate{ $1.didExpiredAdapter($0) }
+    }
+    
+    func didFail(toLoadAd wrapper: STKMRAIDWrapper, withError error: Error) {
         self.notifyDelegate{ $1.failToLoad($0, BidMachineAdapterError.badContent("Can't load MRAID", error)) }
     }
     
-    func ad(_ ad: STKMRAIDAd, shouldProcessNavigationWith URL: URL) -> Bool {
-        return true
+    func didFail(toShowAd wrapper: STKMRAIDWrapper, withError error: Error) {
+        self.notifyDelegate{ $1.failToPresent($0, BidMachineAdapterError.badContent("Can't present MRAID", error)) }
     }
-}
-
-extension MRAIDBannerAdapter: STKMRAIDViewPresenterDelegate {
     
-    func presenterWillLeaveApplication(_ presenter: STKMRAIDPresenter) {
+    func bannerDidShow(_ banner: STKMRAIDBanner) {
+        _isMraidOnScreen = true
+        _trackImpressionIfNeeded()
+    }
+    
+    func wrapperWillLeaveApplication(_ wrapper: STKMRAIDWrapper) {
         self.notifyDelegate{ $1.didRecieveUserAction($0) }
     }
     
-    func presenterWillPresentProductScreen(_ presenter: STKMRAIDPresenter) {
+    func wrapperWillPresentProductScreen(_ wrapper: STKMRAIDWrapper) {
         self.notifyDelegate{ $1.willPresentScreen($0) }
         self.notifyDelegate{ $1.didRecieveUserAction($0) }
     }
     
-    func presenterDidDismissProductScreen(_ presenter: STKMRAIDPresenter) {
+    func wrapperDidDismissProductScreen(_ wrapper: STKMRAIDWrapper) {
         self.notifyDelegate{ $1.didDismissScreen($0) }
     }
     
-    func presenterRootViewController() -> UIViewController? {
+    func rootViewController() -> UIViewController? {
         return self.dataSource?.controller
     }
 }
