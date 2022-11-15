@@ -65,7 +65,7 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     }
     
     func vastControllerDidPresent(_ controller: STKVASTController) {
-        self.notifyDelegate { $1.didPresent($0) }
+        
         
     }
     
@@ -76,6 +76,7 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     }
     
     func vastControllerDidImpression(_ controller: STKVASTController) {
+        self.notifyDelegate { $1.didPresent($0) }
         self.notifyDelegate { $1.trackImpression() }
     }
     

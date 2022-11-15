@@ -64,11 +64,12 @@ extension MRAIDFullscreenAdapter: STKMRAIDInterstitialDelegate {
     }
     
     func interstitialDidImpression(_ interstitial: STKMRAIDInterstitial) {
+        self.notifyDelegate { $1.didPresent($0) }
         self.notifyDelegate { $1.trackImpression() }
     }
     
     func interstitialDidAppear(_ interstitial: STKMRAIDInterstitial) {
-        self.notifyDelegate { $1.didPresent($0) }
+       
     }
     
     func interstitialDidDissapear(_ interstitial: STKMRAIDInterstitial) {
