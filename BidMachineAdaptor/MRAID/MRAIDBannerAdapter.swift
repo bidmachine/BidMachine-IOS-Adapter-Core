@@ -3,7 +3,7 @@ import UIKit
 @_implementationOnly import StackUIKit
 @_implementationOnly import BidMachine
 @_implementationOnly import StackMRAIDKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import BidMachineBiddingCore
 
 class MRAIDBannerAdapter: NSObject, BiddingAdapterProtocol {
@@ -38,10 +38,7 @@ extension MRAIDBannerAdapter {
         _prepareContent()
     }
     
-    func present() throws {
-        guard let container = self.dataSource?.container else {
-            throw BidMachineAdapterError.noContent("Container can't be nll")
-        }
+    func present(on container: UIView, with controller: UIViewController) throws {
         _present(container)
     }
     
@@ -64,7 +61,7 @@ extension MRAIDBannerAdapter: BiddingAdapterEventStateRouter {
     
     func _trackImpressionIfNeeded() {
         if _isAdOnScreen && _isMraidOnScreen {
-            self.notifyDelegate{ $1.trackImpression() }
+            self.notifyDelegate{ $1.didTrackImpression($0) }
         }
     }
 }
@@ -97,11 +94,15 @@ extension MRAIDBannerAdapter: STKMRAIDBannerDelegate {
     }
     
     func didFail(toLoadAd wrapper: STKMRAIDWrapper, withError error: Error) {
-        self.notifyDelegate{ $1.failToLoad($0, BidMachineAdapterError.badContent("Can't load MRAID", error)) }
+        self.notifyDelegate {
+            $1.failToLoad($0, ErrorProvider.unknown(MRAIDNetwork.adapterName)
+                .noContent.withError("Fail load", error)) }
     }
     
     func didFail(toShowAd wrapper: STKMRAIDWrapper, withError error: Error) {
-        self.notifyDelegate{ $1.failToPresent($0, BidMachineAdapterError.badContent("Can't present MRAID", error)) }
+        self.notifyDelegate {
+            $1.failToPresent($0, ErrorProvider.unknown(MRAIDNetwork.adapterName)
+                .badContent.withError("Fail present", error)) }
     }
     
     func bannerDidShow(_ banner: STKMRAIDBanner) {

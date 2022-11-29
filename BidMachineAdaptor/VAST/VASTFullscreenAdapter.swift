@@ -1,7 +1,7 @@
 import UIKit
 
 @_implementationOnly import StackVASTKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import BidMachineBiddingCore
 
 class VASTFullscreenAdapter: NSObject, BiddingAdapterProtocol {
@@ -35,8 +35,8 @@ extension VASTFullscreenAdapter {
         _presenter.load(forVastXML: _configuration.adm.data(using: .utf8))
     }
     
-    func present() throws {
-        _presenter.present(from: self.dataSource?.controller)
+    func present(on controller: UIViewController) throws {
+        _presenter.present(from: controller)
     }
 }
 
@@ -52,16 +52,15 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     }
     
     func vastController(_ controller: STKVASTController, didFailToLoad error: Error) {
-        self.notifyDelegate{ $1.failToLoad($0, BidMachineAdapterError.badContent("Can't load VAST", error)) }
+        self.notifyDelegate {
+            $1.failToLoad($0, ErrorProvider.unknown(VASTNetwork.adapterName)
+                .badContent.withError("Fail load", error)) }
     }
     
     func vastController(_ controller: STKVASTController, didFailWhileShow error: Error) {
-        var wrappedError = BidMachineAdapterError.badContent("Can't present VAST", error)
-        if (error as NSError).code == 201 {
-            wrappedError = BidMachineAdapterError.timeouted("Can't present VAST", error)
-        }
-
-        self.notifyDelegate { $1.failToPresent($0, wrappedError) }
+        self.notifyDelegate {
+            $1.failToPresent($0, ErrorProvider.unknown(VASTNetwork.adapterName)
+                .badContent.withError("Fail present", error)) }
     }
     
     func vastControllerDidPresent(_ controller: STKVASTController) {
@@ -77,7 +76,7 @@ extension VASTFullscreenAdapter: STKVASTControllerDelegate {
     
     func vastControllerDidImpression(_ controller: STKVASTController) {
         self.notifyDelegate { $1.didPresent($0) }
-        self.notifyDelegate { $1.trackImpression() }
+        self.notifyDelegate { $1.didTrackImpression($0) }
     }
     
     func vastControllerWillLeaveApplication(_ controller: STKVASTController) {

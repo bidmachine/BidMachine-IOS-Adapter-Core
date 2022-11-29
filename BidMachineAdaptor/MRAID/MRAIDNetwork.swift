@@ -2,7 +2,7 @@
 
 @_implementationOnly import BidMachine
 @_implementationOnly import StackMRAIDKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import BidMachineBiddingCore
 
 
@@ -10,13 +10,13 @@ class MRAIDNetwork : BiddingNetworkProtocol {
     
     static var adapterName: String = "mraid"
     
-    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + "." + BidMachineAdapter.iabVersion
-    
     static var networkVersion: String = StackMRAIDKitVersion
+    
+    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + "." + BidMachineAdapter.iabVersion
     
     weak var delegate: BiddingNetworkDelegate?
     
-    func adapterProvider(_ biddingUnit: BiddingUnit) -> BiddingAdapterProviderProtocolType? {
+    func adapterProvider(_ biddingUnit: BiddingUnit) throws -> BiddingAdapterProviderProtocolType {
         return MRAIDProvider(biddingUnit)
     }
     
@@ -52,16 +52,19 @@ fileprivate extension Placement {
     
     func adapter(_ params: BiddingParams) throws -> BiddingAdapterProtocol {
         guard self.type.isStatic == true else {
-            throw BidMachineAdapterError.badContent("Can't create adapter with placement - \(self.type.name)")
-        }
-
-        guard let configuration = try? params.decode(BidMachineIABConfiguration.self) else {
-            throw BidMachineAdapterError.badContent("Can't create IAB configuration")
+            throw ErrorProvider.unknown(MRAIDNetwork.adapterName).badContent.withDescription("Can't create adapter with placement - \(self.type.name)")
         }
         
-        let adapter = BidMachineSemaphore.mainSync { _syncAdapter(configuration) }
+        let configuration: BidMachineIABConfiguration
+        do {
+            configuration = try params.decode(BidMachineIABConfiguration.self)
+        } catch {
+            throw ErrorProvider.unknown(MRAIDNetwork.adapterName).badContent.withError("Can't create IAB configuration", error)
+        }
+        
+        let adapter = BidMachineDispatcher.mainSync { _syncAdapter(configuration) }
         guard let adapter = adapter else {
-            throw BidMachineAdapterError.badContent("Can't create adapter")
+            throw ErrorProvider.unknown(MRAIDNetwork.adapterName).badContent.withDescription("Can't create adapter")
         }
 
         return adapter

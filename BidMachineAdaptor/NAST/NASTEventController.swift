@@ -24,12 +24,12 @@ class NASTEventController {
 extension NASTEventController: BiddingAdapterEventStateRouter {
     
     func trackContainerAdded() {
-        adapter?.notifyDelegate { $1.trackContainerAdded() }
+        adapter?.notifyDelegate { $1.didPresent($0) }
     }
     
     func trackImpression() {
         STKThirdPartyEventTracker.sendTrackingEvents(_impressionTracking)
-        adapter?.notifyDelegate { $1.trackImpression() }
+        adapter?.notifyDelegate { $1.didTrackImpression($0) }
     }
     
     func trackClick() {

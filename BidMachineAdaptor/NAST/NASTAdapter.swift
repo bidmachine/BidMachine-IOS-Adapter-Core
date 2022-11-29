@@ -56,8 +56,8 @@ extension NASTAdapter {
     func prepareContent() throws {
         self.notifyDelegate { $1.didLoad($0) }
     }
-
-    func present() throws {
+    
+    func present(on container: UIView, with controller: UIViewController) throws {
         try _present()
     }
 

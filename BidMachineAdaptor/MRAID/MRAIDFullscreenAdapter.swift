@@ -3,7 +3,7 @@ import UIKit
 @_implementationOnly import StackUIKit
 @_implementationOnly import BidMachine
 @_implementationOnly import StackMRAIDKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import BidMachineBiddingCore
 
 class MRAIDFullscreenAdapter: NSObject, BiddingAdapterProtocol {
@@ -35,7 +35,7 @@ extension MRAIDFullscreenAdapter {
         _interstitial.loadHTML(_configuration.adm, with: _configuration.mraidConfiguration)
     }
     
-    func present() throws {
+    func present(on controller: UIViewController) throws {
         _interstitial.presentAd()
     }
 }
@@ -51,21 +51,20 @@ extension MRAIDFullscreenAdapter: STKMRAIDInterstitialDelegate {
     }
     
     func didFail(toLoadAd wrapper: STKMRAIDWrapper, withError error: Error) {
-        self.notifyDelegate{ $1.failToLoad($0, BidMachineAdapterError.badContent("Can't load MRAID", error)) }
+        self.notifyDelegate {
+            $1.failToLoad($0, ErrorProvider.unknown(MRAIDNetwork.adapterName)
+                .noContent.withError("Fail load", error)) }
     }
     
     func didFail(toShowAd wrapper: STKMRAIDWrapper, withError error: Error) {
-        var wrappedError = BidMachineAdapterError.badContent("Can't present MRAID", error)
-        if (error as NSError).code == 201 {
-            wrappedError = BidMachineAdapterError.timeouted("Can't present MRAID", error)
-        }
-
-        self.notifyDelegate { $1.failToPresent($0, wrappedError) }
+        self.notifyDelegate {
+            $1.failToPresent($0, ErrorProvider.unknown(MRAIDNetwork.adapterName)
+                .badContent.withError("Fail present", error)) }
     }
     
     func interstitialDidImpression(_ interstitial: STKMRAIDInterstitial) {
         self.notifyDelegate { $1.didPresent($0) }
-        self.notifyDelegate { $1.trackImpression() }
+        self.notifyDelegate { $1.didTrackImpression($0) }
     }
     
     func interstitialDidAppear(_ interstitial: STKMRAIDInterstitial) {

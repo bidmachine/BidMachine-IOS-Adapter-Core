@@ -3,7 +3,7 @@
 @_implementationOnly import BidMachine
 @_implementationOnly import StackVASTKit
 @_implementationOnly import StackMRAIDKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import StackProductPresentation
 
 struct BidMachineIABConfiguration: Decodable {

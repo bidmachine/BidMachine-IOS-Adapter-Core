@@ -2,7 +2,7 @@ import UIKit
 
 @_implementationOnly import StackUIKit
 @_implementationOnly import StackVASTKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import BidMachineBiddingCore
 
 class VASTBannerAdapter: NSObject, BiddingAdapterProtocol {
@@ -37,10 +37,7 @@ extension VASTBannerAdapter {
         _prepareContent()
     }
     
-    func present() throws {
-        guard let container = self.dataSource?.container else {
-            throw BidMachineAdapterError.noContent("Container can't be nll")
-        }
+    func present(on container: UIView, with controller: UIViewController) throws {
         _present(container)
     }
     
@@ -61,7 +58,7 @@ extension VASTBannerAdapter {
 extension VASTBannerAdapter: BiddingAdapterEventStateRouter {
     
     func trackImpression() {
-        self.notifyDelegate{ $1.trackImpression() }
+        self.notifyDelegate{ $1.didTrackImpression($0) }
     }
 }
 
@@ -102,11 +99,13 @@ private extension VASTBannerAdapter {
 extension VASTBannerAdapter: STKVASTViewDelegate {
     
     func vastViewReady(_ view: STKVASTView) {
-        self.notifyDelegate{ $1.didLoad($0) }
+        self.notifyDelegate { $1.didLoad($0) }
     }
     
     func vastView(_ view: STKVASTView, didFailToLoad error: Error) {
-        self.notifyDelegate{ $1.failToLoad($0, BidMachineAdapterError.badContent("Can't load VAST", error)) }
+        self.notifyDelegate {
+            $1.failToLoad($0, ErrorProvider.unknown(VASTNetwork.adapterName)
+                .noContent.withError("Fail load", error)) }
     }
     
     func vastViewDidPresent(_ view: STKVASTView) {

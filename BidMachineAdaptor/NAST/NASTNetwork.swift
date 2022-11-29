@@ -2,20 +2,20 @@
 
 @_implementationOnly import BidMachine
 @_implementationOnly import StackNASTKit
-@_implementationOnly import BidMachineApiCore
+@_implementationOnly import BidMachineApiKit
 @_implementationOnly import BidMachineBiddingCore
 
 class NASTNetwork : BiddingNetworkProtocol {
     
     static var adapterName: String = "nast"
     
-    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + "." + BidMachineAdapter.iabVersion
-    
     static var networkVersion: String = StackNASTKitVersion
+    
+    static var adapterVersion: String = BidMachineAdapter.adapterVersionPath + "." + BidMachineAdapter.iabVersion
     
     weak var delegate: BiddingNetworkDelegate?
     
-    func adapterProvider(_ biddingUnit: BiddingUnit) -> BiddingAdapterProviderProtocolType? {
+    func adapterProvider(_ biddingUnit: BiddingUnit) throws -> BiddingAdapterProviderProtocolType {
         return NASTProvider(biddingUnit)
     }
     
@@ -54,15 +54,18 @@ fileprivate extension Placement {
     
     func adapter(_ params: BiddingParams, _ manager: STKNASTManager) throws -> BiddingAdapterProtocol {
         guard self.type.isNative == true else {
-            throw BidMachineAdapterError.badContent("Can't create adapter with placement - \(self.type.name)")
+            throw ErrorProvider.unknown(NASTNetwork.adapterName).badContent.withDescription("Can't create adapter with placement - \(self.type.name)")
         }
 
-        guard let configuration = try? params.decode(BidMachineIABConfiguration.self) else {
-            throw BidMachineAdapterError.badContent("Can't create IAB configuration")
+        let configuration: BidMachineIABConfiguration
+        do {
+            configuration = try params.decode(BidMachineIABConfiguration.self)
+        } catch {
+            throw ErrorProvider.unknown(NASTNetwork.adapterName).badContent.withError("Can't create IAB configuration", error)
         }
         
         guard let nast = try? configuration.adm.JSON() else {
-            throw BidMachineAdapterError.badContent("Can't parse NAST configuration")
+            throw ErrorProvider.unknown(NASTNetwork.adapterName).badContent.withDescription("Can't parse NAST configuration")
         }
         
         var _ad: STKNASTAd?
@@ -74,7 +77,7 @@ fileprivate extension Placement {
         
         semathore.wait()
         guard let _ad = _ad else {
-            throw BidMachineAdapterError.badContent("Can't create NAST ad")
+            throw ErrorProvider.unknown(NASTNetwork.adapterName).badContent.withDescription("Can't create NAST ad")
         }
         
         return NASTAdapter(_ad, configuration)
