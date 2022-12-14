@@ -127,7 +127,7 @@ private extension BidMachineIABConfiguration {
     var mraidServiceConfiguration: STKMRAIDServiceConfiguration {
         let config = STKMRAIDServiceConfiguration()
         
-        config.registerServices([kMRAIDSupportsInlineVideo, kMRAIDSupportsLogging, kMRAIDMeasure])
+        config.registerServices([kMRAIDSupportsInlineVideo, kMRAIDSupportsLogging, kMRAIDMeasure, kMRAIDPreloadURL])
         config.partnerName = BidMachineSdk.partnerName
         config.partnerVersion = BidMachineSdk.partnerVersion
         return config
