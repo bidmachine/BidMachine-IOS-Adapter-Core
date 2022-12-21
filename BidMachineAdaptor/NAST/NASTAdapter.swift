@@ -62,9 +62,7 @@ extension NASTAdapter {
     }
 
     func invalidate() {
-        _mediaController.invalidate()
-        _actionController.invalidate()
-        self.notifyDelegate { $1.didDismiss($0) }
+        self.unregisterView()
     }
 
     var nativeRouter: BiddingAdapterNativeSourceRouterProtocol? {
@@ -89,6 +87,12 @@ extension NASTAdapter: BiddingAdapterNativeSourceRouterProtocol {
         case is VideoAssetType.Type: return _video as? NativeAsset<T>
         default: return nil
         }
+    }
+    
+    func unregisterView() {
+        _mediaController.invalidate()
+        _actionController.invalidate()
+        self.notifyDelegate { $1.didDismiss($0) }
     }
 }
 
